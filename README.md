@@ -26,15 +26,15 @@ DeepToolKit用于帮助用户一键处理数据、提供常用训练模型与工
 
 ```bash
 /data/source_data
-		--category_1
-				--data_1.jpg
-				--data_2.jpg
-				...
-		--category_2
-				--data_1.jpg
-				--data_2.jpg
-				...
+	--category_1
+		--data_1.jpg
+		--data_2.jpg
 		...
+	--category_2
+		--data_1.jpg
+		--data_2.jpg
+		...
+	...
 ```
 
 * python代码如下所示
@@ -50,31 +50,31 @@ cv_data_manager.segmentation("/data/source_data", "/data/seg_data")
 
 ```bash
 /data/seg_data
-		--train
-				--category_1
-						--data_1.jpg
-						--data_2.jpg
-						...
-				--category_2
-						--data_1.jpg
-						--data_2.jpg
-						...
-				...
-		--val
-				--category_1
-						--data_3.jpg
-						--data_4.jpg
-						...
-				--category_2
-						--data_3.jpg
-						--data_4.jpg
-						...
-				...
+	--train
+		--category_1
+			--data_1.jpg
+			--data_2.jpg
+			...
+		--category_2
+			--data_1.jpg
+			--data_2.jpg
+			...
+		...
+	--val
+		--category_1
+			--data_3.jpg
+			--data_4.jpg
+			...
+		--category_2
+			--data_3.jpg
+			--data_4.jpg
+			...
+		...
 ```
 
 ### 3.2 数据特征提取
 
-####3.2.1 CV
+#### 3.2.1 CV
 
 * 首先需要设置原始文件路径与目标文件路径，其中每个路径格式都与3.1中的格式相同，即种类目录的父目录，设置路径时可以通过CVDataManager类的构造函数设置，也可以在实例化之后调用相应的成员方法
 
@@ -110,15 +110,15 @@ cv_data_manager.extract_feature_just_rgb(img_rows=299, img_cols=299)
 
 ```bash
 /data/json_data/RGB_Feature
-		--train
-				0.json
-				1.json
-				...
+	--train
+		0.json
+		1.json
+		...
 ```
 
 ### 3.3 常用神经网络模型
 
-####3.3.1 CV
+#### 3.3.1 CV
 
 * 调用代码如下
 
@@ -134,9 +134,9 @@ model = model_class.get_model()
 
 * 接下来便可以调用compile、fit等成员方法进行模型的编译和训练
 
-###3.4 常用训练工具
+### 3.4 常用训练工具
 
-####3.4.1 generator
+#### 3.4.1 generator
 
 * 通常情况下数据集会很大以至于直接使用fit函数会导致内存（显存）爆炸，故建议直接使用fit_generator函数，在这之前，需要调用DeepToolKit中相应的成员方法，代码如下
 
@@ -153,7 +153,7 @@ val_generator = generator.val_data_generator(batch_size=batch_size, target_path=
 label_num = cv_data_manager..get_file_num_in_path("/data/seg_data/train")
 ```
 
-####3.4.2 callback
+#### 3.4.2 callback
 
 * 当需要在每个epoch结束后想做点什么时（如保存当前最优模型），可以设定回调函数，DeepToolKit中也提供了相应方法，如下代码所示
 
