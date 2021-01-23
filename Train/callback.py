@@ -1,12 +1,20 @@
-from keras.callbacks import ModelCheckpoint
+from tensorflow.keras.callbacks import ModelCheckpoint
+import os
 
 
 class CallBack(object):
 
-    # 按照 val_f1 保存模型（与metrics.Metrics搭配使用）
-    def get_check_point_callback(self):
-        ck_callback = ModelCheckpoint('./checkpoints/weights.{epoch:02d}-{val_f1:.4f}.hdf5',
-                                                      monitor='val_f1',
-                                                      mode='max', verbose=2,
+    def check_target_path(self, target_path):
+        if not os.path.exists(target_path):
+            os.makedirs(target_path)
+
+    def get_check_point_callback(self, model_target_path, monitor, mode):
+        self.check_target_path(model_target_path)
+
+        ck_callback = ModelCheckpoint(model_target_path + '/weights.{epoch:02d}-{' + monitor + ':.4f}.hdf5',
+                                                      monitor=monitor,
+                                                      mode=mode, verbose=2,
                                                       save_best_only=True,
                                                       save_weights_only=True)
+
+        return ck_callback

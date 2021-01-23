@@ -1,16 +1,19 @@
 from DataManager.ToolKit import ToolKit
 import cv2 as cv
+import os
 
 
 class CVDataManager(ToolKit):
 
-    def __init__(self, source_data_filepath, target_path):
+    def __init__(self, source_data_filepath="", target_path=""):
         super().__init__(source_data_filepath)
-        self.filepath_label_dict = {}
         self.target_path = target_path
 
+        if not os.path.exists(self.target_path) and self.target_path != "":
+            os.makedirs(self.target_path)
+
     # 处理数据，提取基础特征
-    def extract_feature_just_rgb(self, img_rows=224, img_cols=224):
+    def extract_feature_just_rgb(self, img_rows=224, img_cols=224, reset=1):
         print("Extracting RGB feature from image...")
         counter = 0
         error_file_counter = 0
@@ -30,16 +33,8 @@ class CVDataManager(ToolKit):
 
         print("There are " + str(error_file_counter) + " file loading fail.")
 
-    # 得到数据的绝对路径-标签词典
-    def get_filepath_label_dict(self):
-        print("Getting filepath and label dict...")
-
-        filepath_list, label_list = self.get_data_filepath_and_label()
-
-        self.shuffle_data(filepath_list, label_list)
-
-        for i in range(len(filepath_list)):
-            self.filepath_label_dict[filepath_list[i]] = self.label_dict[label_list[i]]
+        if reset == 1:
+            self.filepath_label_dict = {}
 
     # 读取图片并标准化
     def normalize(self, data_filepath, img_rows, img_cols):
@@ -52,6 +47,15 @@ class CVDataManager(ToolKit):
         except:
             error = 1
         return normalized_feature, error
+
+    def set_source_data_filepath(self, source_data_filepath):
+        self.source_data_filepath = source_data_filepath
+
+    def set_target_filepath(self, target_filepath):
+        self.target_path = target_filepath
+
+        if not os.path.exists(self.target_path) and self.target_path != "":
+            os.makedirs(self.target_path)
 
 
 if __name__ == '__main__':

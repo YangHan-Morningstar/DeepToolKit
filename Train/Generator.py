@@ -2,7 +2,7 @@ import os
 import random
 import json
 import numpy as np
-from keras.utils import to_categorical
+from tensorflow.keras.utils import to_categorical
 
 
 class Generator(object):
@@ -23,7 +23,7 @@ class Generator(object):
 
             yield inputing, outputing
 
-    def test_data_generator(self, batch_size, target_path, label_num):
+    def val_data_generator(self, batch_size, target_path, label_num):
         while True:
             inputing, outputing = [], []
             data_list = os.listdir(target_path)

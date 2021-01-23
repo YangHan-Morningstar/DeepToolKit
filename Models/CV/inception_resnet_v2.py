@@ -1,6 +1,6 @@
-from keras.layers import *
-from keras.models import Model
-import keras.backend as K
+from tensorflow.keras.layers import *
+from tensorflow.keras.models import Model
+import tensorflow.keras.backend as K
 
 
 class InceptionResnetV2Model:
