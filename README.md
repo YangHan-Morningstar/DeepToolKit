@@ -72,6 +72,8 @@ cv_data_manager.segmentation("/data/source_data", "/data/seg_data")
 		...
 ```
 
+* 注意：对于NLP任务，仅支持txt文件，即每个txt文件中存储一条数据内容。
+
 ### 3.2 数据特征提取
 
 #### 3.2.1 CV
@@ -116,6 +118,56 @@ cv_data_manager.extract_feature_just_rgb(img_rows=299, img_cols=299)
 		...
 ```
 
+#### 3.2.2 NLP
+
+* 首先需要设置原始文件路径与目标文件路径，其中每个路径格式都与3.1中的格式相同，即种类目录的父目录，设置路径时可以通过NLPDataManager类的构造函数设置，也可以在实例化之后调用相应的成员方法
+
+```python
+from DeepToolKit.DataManager.NLPDataManager import NLPDataManager
+source_path = "/data/seg_data/train"
+target_path = "/data/json_data/train"
+
+# 通过构造函数设置
+nlp_data_manager = NLPDataManager(source_path, target_path)
+
+# 通过成员方法设置
+nlp_data_manager = NLPDataManager()
+nlp_data_manager.set_source_data_filepath(source_path)
+nlp_data_manager.set_target_filepath(target_path)
+```
+
+* 其次，根据训练集数据获取词典
+
+```python
+nlp_data_manager.get_filepath_label_dict()
+nlp_data_manager.word_frequency_statistics()
+nlp_data_manager.cal_word_dict(top_k=100) # top_k词频阈值，词频小于top_k的词将不会被写入词典
+```
+
+* 在通过训练集获取词典后，为方便使用可直接写入json文件
+
+```python
+nlp_data_manager.write_to_json("./dicts/word_dict.json", nlp_data_manager.get_word_dict())
+```
+
+* 最后即可提取特征
+
+```python
+nlp_data_manager.extract_feature_just_by_dict() # 此处仅将原始文本数据中的每个单词转换为对应数字并写入json文件
+```
+
+* 如果继续处理验证集，则可直接加载之前保存的词典、重制路径、提取特征
+
+```python
+nlp_data_manager.set_word_dict("./dicts/word_dict.json")
+
+nlp_data_manager.set_source_data_filepath("/data/seg_data/val")
+nlp_data_manager.set_target_filepath("/data/json_data/val")
+
+nlp_data_manager.get_filepath_label_dict()
+nlp_data_manager.extract_feature_just_by_dict()
+```
+
 ### 3.3 常用神经网络模型
 
 #### 3.3.1 CV
@@ -143,8 +195,8 @@ model = model_class.get_model()
 ```python
 from DeepToolKit.Train.generator import Generator
 
-train_generator = generator.train_data_generator(batch_size=batch_size, target_path=target_path + "/train", label_num=label_num)
-val_generator = generator.val_data_generator(batch_size=batch_size, target_path=target_path + "/val", label_num=label_num)
+train_generator = generator.train_data_generator(batch_size=batch_size, target_path=target_path + "/train", label_num=label_num, task_category="cv")
+val_generator = generator.val_data_generator(batch_size=batch_size, target_path=target_path + "/val", label_num=label_num, task_category="cv")
 ```
 
 * 其中target_path参数需要设置为提取特征后的json文件所在的父目录（详见3.2.1），label_num即为标签的数目，可以自行填写或通过如下代码获取
