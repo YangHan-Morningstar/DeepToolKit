@@ -13,7 +13,7 @@ class CVDataManager(ToolKit):
             os.makedirs(self.target_path)
 
     # 处理数据，提取基础特征
-    def extract_feature_just_rgb(self, img_rows=224, img_cols=224, reset=1):
+    def extract_feature_just_rgb(self, img_rows=224, img_cols=224):
         print("Extracting RGB feature from image...")
         counter = 0
         error_file_counter = 0
@@ -33,9 +33,6 @@ class CVDataManager(ToolKit):
 
         print("There are " + str(error_file_counter) + " file loading fail.")
 
-        if reset == 1:
-            self.filepath_label_dict = {}
-
     # 读取图片并标准化
     def normalize(self, data_filepath, img_rows, img_cols):
         error = 0
@@ -53,6 +50,18 @@ class CVDataManager(ToolKit):
 
     def set_target_filepath(self, target_filepath):
         self.target_path = target_filepath
+
+        if not os.path.exists(self.target_path) and self.target_path != "":
+            os.makedirs(self.target_path)
+
+    def reset(self, source_data_filepath="", target_filepath=""):
+        self.source_data_filepath = source_data_filepath
+        self.target_path = target_filepath
+        self.label_dict = {}
+        self.filepath_label_dict = {}
+        self.data_counter = 0
+        self.train_data_counter = 0
+        self.val_data_counter = 0
 
         if not os.path.exists(self.target_path) and self.target_path != "":
             os.makedirs(self.target_path)

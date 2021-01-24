@@ -40,6 +40,8 @@ class ToolKit(object):
 
         self.shuffle_data(filepath_list, label_list)
 
+        if self.filepath_label_dict != {}:
+            self.filepath_label_dict = {}
         for i in range(len(filepath_list)):
             self.filepath_label_dict[filepath_list[i]] = self.label_dict[label_list[i]]
 
@@ -56,6 +58,11 @@ class ToolKit(object):
     def write_to_json(self, path, data_label_dict):
         with open(path, 'w') as json_file:
             json_file.write(json.dumps(data_label_dict))
+
+    def read_from_json(self, path):
+        with open(path) as temp_file:
+            temp_dict = json.load(temp_file)
+        return temp_dict
 
     # 随机打乱数据
     def shuffle_data(self, data, label):
