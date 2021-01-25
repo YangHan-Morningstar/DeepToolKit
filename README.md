@@ -216,3 +216,40 @@ model_checkpoint_callback = CallBack().get_model_checkpoint_callback("./model_ch
 ```
 
 * 其中"val_loss"是需要监测的评价指标，min所描述的是如果新的epoch比上一个epoch结束是的val_loss更小，则保存模型，否则不会保存
+
+#### 3.4.3 metrics
+
+* 大多数metrics已经在TensorFlow中实现，如Recall、Precision等，该模块则提供没有在框架内实现的评价指标，代码示例如下
+
+```python
+from DeepToolKit.Train.metrics import F1Score
+
+model.compile("adam",
+              "categorical_crossentropy",
+              metrics=[tensorflow.keras.metrics.Precision(), tensorflow.keras.metrics.Recall(), F1Score()])
+```
+
+### 3.5 模型测试使用时的数据处理
+
+* 测试模型或使用模型时均需将自然输入的数据转化为已经训练好模型的输入形式，通常每次仅输入一条数据，故在输入模型时需要加上batch维度，代码示例如下（NLP）
+
+```python
+from DeepToolKit.Models.NLP.transformer import Transformer
+
+maxlen=2600
+vocab_size=95843
+embed_dim=32
+num_heads=2
+ff_dim=32
+
+nlp_data_manager = NLPDataManager()
+nlp_data_manager.set_word_dict("./dicts/word_dict.json")# 设置上次训练保留的词典
+
+model = Transformer(maxlen=maxlen, vocab_size=vocab_size, embed_dim=embed_dim, num_heads=num_heads, ff_dim=ff_dim).get_model()
+model.load_weights("./checkpoints/weights-06.hdf5")
+
+text_content = input()
+text_data = np.array(nlp_data_manager.get_model_input_data_on_single_sentence(text_content, 2600))
+
+predict_num = np.argmax(model.predict(news_data)[0]) # 模型预测的种类的编号
+```
