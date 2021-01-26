@@ -34,7 +34,7 @@ class NLPDataManager(ToolKit):
     def cal_word_dict(self, top_k=20000):
         print("Calculating word dict...")
 
-        word_frequency_sorted = sorted(self.word_frequency, key=lambda x: x[1], reverse=True)
+        word_frequency_sorted = sorted(self.word_frequency.items(), key=lambda x: x[1], reverse=True)
 
         if len(word_frequency_sorted) <= top_k:
             for word, fre in word_frequency_sorted:

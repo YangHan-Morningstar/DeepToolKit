@@ -76,7 +76,7 @@ class ToolKit(object):
         data, label = temp_data, temp_label
 
     # 将完整的数据集中每一类按比例划分为训练集和验证集
-    def segmentation(self, source_data_filepath, target_filepath, rate=0.1):
+    def segmentation(self, source_data_filepath, target_filepath, rate=0.2):
         print("Automatically segmenting data...")
         target_filepath_train = target_filepath + "/train"
         target_filepath_val = target_filepath + "/val"
