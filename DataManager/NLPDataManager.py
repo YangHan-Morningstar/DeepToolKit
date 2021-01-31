@@ -12,7 +12,7 @@ class NLPDataManager(ToolKit):
         super().__init__(source_data_filepath)
         self.target_path = target_path
         self.word_frequency = {}
-        self.word_dict = {"NaN": 0}
+        self.word_dict = {"NaN": 1}
         self.text_max_len = 0
 
         if not os.path.exists(self.target_path) and self.target_path != "":
@@ -21,11 +21,16 @@ class NLPDataManager(ToolKit):
     def word_frequency_statistics(self):
         print("Getting word frequency...")
 
+        stop_word_chinese = self.read_from_json("./DeepToolKit/DataManager/stop_word_chinese.json")
+
         for filepath, label in self.filepath_label_dict.items():
             txt_content = self.get_txt_content_from_text_file(filepath)
             word_list = self.cut_sentence_to_word_and_cal_maxlen(txt_content)
 
             for word in word_list:
+                if word in stop_word_chinese:
+                    continue
+
                 if word not in self.word_frequency:
                     self.word_frequency[word] = 1
                 else:
@@ -38,11 +43,11 @@ class NLPDataManager(ToolKit):
 
         if len(word_frequency_sorted) <= top_k:
             for word, fre in word_frequency_sorted:
-                    self.word_dict[word] = len(self.word_dict)
+                    self.word_dict[word] = len(self.word_dict) + 1
         else:
             word_frequency_sorted_maxlen_is_top_k = word_frequency_sorted[0: top_k]
             for word, fre in word_frequency_sorted_maxlen_is_top_k:
-                    self.word_dict[word] = len(self.word_dict)
+                    self.word_dict[word] = len(self.word_dict) + 1
 
     def get_word_dict(self):
         return self.word_dict
