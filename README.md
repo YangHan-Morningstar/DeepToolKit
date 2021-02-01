@@ -190,15 +190,16 @@ model = model_class.get_model()
 
 #### 3.4.1 generator
 
-* 通常情况下数据集会很大以至于直接使用fit函数会导致内存（显存）爆炸，故建议直接使用fit_generator函数，在这之前，需要调用DeepToolKit中相应的成员方法，代码如下
+* 通常情况下数据集会很大以至于直接使用fit函数会导致内存（显存）爆炸，故建议直接使用fit_generator函数，在这之前，需要调用DeepToolKit中相应的成员方法，代码示例如下
 
 ```python
-from DeepToolKit.Train.generator import Generator
+from DeepToolKit.Train.generator import SequenceGenerator
 
-train_generator = generator.train_data_generator(batch_size=batch_size, target_path=target_path + "/train", label_num=label_num, task_category="cv")
-val_generator = generator.val_data_generator(batch_size=batch_size, target_path=target_path + "/val", label_num=label_num, task_category="cv")
+train_generator = SequenceGenerator(batch_size=batch_size, target_path=target_path + "/train", label_num=label_num, task_category="cv")
+val_generator = SequenceGenerator(batch_size=batch_size, target_path=target_path + "/val", label_num=label_num, task_category="cv")
 ```
 
+* generator中含有继承tf.keras.utils.Sequences的Generator类和普通Generator方法，前者实现了多进程处理数据，推荐使用。
 * 其中target_path参数需要设置为提取特征后的json文件所在的父目录（详见3.2.1），label_num即为标签的数目，可以自行填写或通过如下代码获取
 
 ```python
@@ -207,7 +208,7 @@ label_num = cv_data_manager..get_file_num_in_path("/data/seg_data/train")
 
 #### 3.4.2 callback
 
-* 当需要在每个epoch结束后想做点什么时（如保存当前最优模型），可以设定回调函数，DeepToolKit中也提供了相应方法，如下代码所示
+* 当需要在每个epoch结束后想做点什么时（如保存当前最优模型），可以设定回调函数，DeepToolKit中也提供了相应方法，代码示例如下
 
 ```python
 from DeepToolKit.Train.callback import CallBack
