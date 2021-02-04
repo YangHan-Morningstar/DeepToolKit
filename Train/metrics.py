@@ -7,6 +7,7 @@ from tensorflow.keras.metrics import Metric
 from tensorflow.keras.callbacks import Callback
 from sklearn.metrics import f1_score, recall_score, precision_score
 import numpy as np
+import tensorflow as tf
 
 
 class SelfValMetrics(Callback):
@@ -104,3 +105,72 @@ class F1Score(Metric):
         num_thresholds = len(to_list(self.thresholds))
         K.batch_set_value(
             [(v, np.zeros((num_thresholds,))) for v in self.variables])
+
+
+class SelfF1(Metric):
+    def __init__(self, average="macro", name="self_f1", **kwargs):
+        super(SelfF1, self).__init__(name=name, **kwargs)
+        self.f1_value = self.add_weight(name="sf", initializer="zeros", dtype="float64")
+        self.average = average
+
+    def update_state(self, y_true, y_pred, sample_weight=None):
+
+        y_pred = tf.reshape(tf.argmax(y_pred, axis=1), shape=(-1,))
+        if len(y_true.shape) == 2 and y_true.shape[1] != 1:
+            y_true = tf.reshape(tf.argmax(y_true, axis=1), shape=(-1,))
+
+        f1_value = f1_score(y_true=y_true.numpy(), y_pred=y_pred.numpy(), average=self.average)
+
+        self.f1_value.assign(f1_value)
+
+    def result(self):
+        return self.f1_value
+
+    def reset_states(self):
+        self.f1_value.assign(0.0)
+
+
+class SelfPrecision(Metric):
+    def __init__(self, average="macro", name="self_precision", **kwargs):
+        super(SelfPrecision, self).__init__(name=name, **kwargs)
+        self.precision_value = self.add_weight(name="sp", initializer="zeros", dtype="float64")
+        self.average = average
+
+    def update_state(self, y_true, y_pred, sample_weight=None):
+
+        y_pred = tf.reshape(tf.argmax(y_pred, axis=1), shape=(-1,))
+        if len(y_true.shape) == 2 and y_true.shape[1] != 1:
+            y_true = tf.reshape(tf.argmax(y_true, axis=1), shape=(-1,))
+
+        precision_value = precision_score(y_true=y_true.numpy(), y_pred=y_pred.numpy(), average=self.average)
+
+        self.precision_value.assign(precision_value)
+
+    def result(self):
+        return self.precision_value
+
+    def reset_states(self):
+        self.precision_value.assign(0.0)
+
+
+class SelfRecall(Metric):
+    def __init__(self, average="macro", name="self_recall", **kwargs):
+        super(SelfRecall, self).__init__(name=name, **kwargs)
+        self.recall_value = self.add_weight(name="sr", initializer="zeros", dtype="float64")
+        self.average = average
+
+    def update_state(self, y_true, y_pred, sample_weight=None):
+
+        y_pred = tf.reshape(tf.argmax(y_pred, axis=1), shape=(-1,))
+        if len(y_true.shape) == 2 and y_true.shape[1] != 1:
+            y_true = tf.reshape(tf.argmax(y_true, axis=1), shape=(-1,))
+
+        recall_value = recall_score(y_true=y_true.numpy(), y_pred=y_pred.numpy(), average=self.average)
+
+        self.recall_value.assign(recall_value)
+
+    def result(self):
+        return self.recall_value
+
+    def reset_states(self):
+        self.recall_value.assign(0.0)
