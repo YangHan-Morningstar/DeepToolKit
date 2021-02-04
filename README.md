@@ -230,6 +230,19 @@ model.compile("adam",
               metrics=[tensorflow.keras.metrics.Precision(), tensorflow.keras.metrics.Recall(), F1Score()])
 ```
 
+* 通过sklearn可以调用自定义平均值计算方法的评价指标，如宏平均macro和微平均micro，代码示例如下
+
+```python
+from DeepToolKit.Train.metrics import SelfF1
+
+model.compile("adam",
+              "categorical_crossentropy",
+              metrics=[SelfF1()],
+              run_eagerly=True)
+```
+
+* 注意：Self开头的类需要在TensorFlow v2.4.1及以上版本使用，并在model.compile函数中添加`run_eagerly=True`，否则可能会出现无法将Tensor转化为Numpy的错误
+
 ### 3.5 模型测试使用时的数据处理
 
 * 测试模型或使用模型时均需将自然输入的数据转化为已经训练好模型的输入形式，通常每次仅输入一条数据，故在输入模型时需要加上batch维度，代码示例如下（NLP）
