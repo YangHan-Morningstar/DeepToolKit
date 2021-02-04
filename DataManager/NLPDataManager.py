@@ -8,12 +8,13 @@ import numpy as np
 
 class NLPDataManager(ToolKit):
 
-    def __init__(self, source_data_filepath="", target_path=""):
+    def __init__(self, source_data_filepath="", target_path="", cut_method="word"):
         super().__init__(source_data_filepath)
         self.target_path = target_path
         self.word_frequency = {}
         self.word_dict = {"NaN": 1}
         self.text_max_len = 0
+        self.cut_method = cut_method
 
         if not os.path.exists(self.target_path) and self.target_path != "":
             os.makedirs(self.target_path)
@@ -100,10 +101,15 @@ class NLPDataManager(ToolKit):
 
     def cut_sentence_to_word_and_cal_maxlen(self, sentence):
         temp_list = []
-        word_list = jieba.cut(sentence, cut_all=False, HMM=True)
-        for word in word_list:
-            temp_list.append(word)
-        self.text_max_len = max(self.text_max_len, len(temp_list))
+        if self.cut_method == "word":
+            word_list = jieba.cut(sentence, cut_all=False, HMM=True)
+            for word in word_list:
+                temp_list.append(word)
+            self.text_max_len = max(self.text_max_len, len(temp_list))
+        elif self.cut_method == "char":
+            for char in sentence:
+                temp_list.append(char)
+            self.text_max_len = max(self.text_max_len, len(temp_list))
         return temp_list
 
     def set_source_data_filepath(self, source_data_filepath):
@@ -115,7 +121,7 @@ class NLPDataManager(ToolKit):
         if not os.path.exists(self.target_path) and self.target_path != "":
             os.makedirs(self.target_path)
 
-    def reset(self, source_data_filepath="", target_path=""):
+    def reset(self, source_data_filepath="", target_path="", cut_method="word"):
         self.source_data_filepath = source_data_filepath
         self.target_path = target_path
         self.label_dict = {}
@@ -126,6 +132,7 @@ class NLPDataManager(ToolKit):
         self.word_frequency = {}
         self.word_dict = {"NaN": 0}
         self.text_max_len = 0
+        self.cut_method = cut_method
 
         if not os.path.exists(self.target_path) and self.target_path != "":
             os.makedirs(self.target_path)
