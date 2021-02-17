@@ -100,7 +100,7 @@ cv_data_manager.set_target_filepath(target_path)
 cv_data_manager.get_filepath_label_dict()
 ```
 
-`{"/data/seg_data/train/category_1/data_1.jpg": category_1 }`
+`{"/data/seg_data/train/category_1/data_1.jpg": category_1(对应的编号) }`
 
 * 最后调用成员方法提取特征并写入json文件，每个json文件中仅含有一条数据的特征及其对应的标签，代码即文件格式如下
 
@@ -108,7 +108,7 @@ cv_data_manager.get_filepath_label_dict()
 cv_data_manager.extract_feature_just_rgb(img_rows=299, img_cols=299)
 ```
 
-`{"data_features": [[[...]]], "label": category_1}`
+`{"data_features": [[[...]]], "label": category_1(对应的编号)}`
 
 ```bash
 /data/json_data/RGB_Feature
@@ -141,7 +141,7 @@ nlp_data_manager.set_target_filepath(target_path)
 ```python
 nlp_data_manager.get_filepath_label_dict()
 nlp_data_manager.word_frequency_statistics()
-nlp_data_manager.cal_word_dict(top_k=100) # top_k词频阈值，词频小于top_k的词将不会被写入词典
+nlp_data_manager.cal_word_dict(top_k=10000) # 词频从大到小排名前top_k的词写入词典
 ```
 
 * 在通过训练集获取词典后，为方便使用可直接写入json文件
@@ -172,7 +172,7 @@ nlp_data_manager.extract_feature_just_by_dict()
 
 #### 3.3.1 CV
 
-* 调用代码如下
+* 代码调用示例如下
 
 ```python
 from DeepToolKit.Models.CV.inception_resnet_v2 import InceptionResnetV2Model
@@ -185,6 +185,16 @@ model = model_class.get_model()
 ```
 
 * 接下来便可以调用compile、fit等成员方法进行模型的编译和训练
+
+#### 3.3.2 NLP
+
+* 代码调用示例如下
+
+```python
+from DeepToolKit.Models.NLP.text_cnn import TextCNN
+
+model = TextCNN(vocab_size=10000, max_len=200, num_class=6).get_model()
+```
 
 ### 3.4 常用训练工具
 
@@ -203,7 +213,7 @@ val_generator = SequenceGenerator(batch_size=batch_size, target_path=target_path
 * 其中target_path参数需要设置为提取特征后的json文件所在的父目录（详见3.2.1），label_num即为标签的数目，可以自行填写或通过如下代码获取
 
 ```python
-label_num = cv_data_manager..get_file_num_in_path("/data/seg_data/train")
+label_num = cv_data_manager.get_file_num_in_path("/data/seg_data/train")
 ```
 
 #### 3.4.2 callback
@@ -237,7 +247,7 @@ from DeepToolKit.Train.metrics import SelfF1
 
 model.compile("adam",
               "categorical_crossentropy",
-              metrics=[SelfF1()],
+              metrics=[SelfF1(average="macro")],  # 宏平均
               run_eagerly=True)
 ```
 
