@@ -64,6 +64,10 @@ class ToolKit(object):
             temp_dict = json.load(temp_file)
         return temp_dict
 
+    def write_to_txt(self, path, content, encoding="utf-8"):
+        with open(path, 'w', encoding=encoding) as file:
+            file.write(content)
+
     # 随机打乱数据
     def shuffle_data(self, data, label):
         temp_data, temp_label = [], []
