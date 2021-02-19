@@ -253,6 +253,20 @@ model.compile("adam",
 
 * 注意：Self开头的类需要在TensorFlow v2.4.1及以上版本使用，并在model.compile函数中添加`run_eagerly=True`，否则可能会出现无法将Tensor转化为Numpy的错误
 
+#### 3.4.4 loss
+
+* 大多数loss已经在TensorFlow中实现，该模块则提供没有在框架内实现的自定义损失函数，代码示例如下
+
+```python
+from DeepToolKit.Train.loss import SelfCategoricalCrossEntropy
+
+model.compile("adam",
+              loss=SelfCategoricalCrossEntropy(margin=0.8).loss_function,
+              metrics=[tf.keras.metrics.CategoricalAccuracy()])
+```
+
+* 如上述代码中的SelfCategoricalCrossEntropy类，提供优化后的交叉熵损失函数，在THUCNews数据集上替换CategoricalCrossEntropy类后F1Score提高1%～2%
+
 ### 3.5 模型测试使用时的数据处理
 
 * 测试模型或使用模型时均需将自然输入的数据转化为已经训练好模型的输入形式，通常每次仅输入一条数据，故在输入模型时需要加上batch维度，代码示例如下（NLP）
