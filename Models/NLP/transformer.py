@@ -226,7 +226,7 @@ class TransformerBlock(layers.Layer):
 
 class Transformer(object):
 
-    def __init__(self, maxlen, vocab_size, embed_dim, num_heads, ff_dim, label_num):
+    def __init__(self, maxlen, vocab_size, embed_dim, num_heads, ff_dim, label_num, final_activation="softmax"):
         self.maxlen = maxlen
         self.vocab_size = vocab_size
         self.embed_dim = embed_dim
@@ -236,6 +236,8 @@ class Transformer(object):
 
         self.embedding_layer = TokenAndPositionEmbedding(self.maxlen, self.vocab_size, self.embed_dim)
         self.transformer_block = TransformerBlock(self.embed_dim, self.num_heads, self.ff_dim)
+        # 最后一层的激活函数
+        self.final_activation = final_activation
 
     def get_model(self):
         inputs = tf.keras.layers.Input(shape=(self.maxlen,))
@@ -247,7 +249,7 @@ class Transformer(object):
         x = tf.keras.layers.Dropout(0.1)(x)
         x = tf.keras.layers.Dense(20, activation="relu")(x)
         x = tf.keras.layers.Dropout(0.1)(x)
-        outputs = tf.keras.layers.Dense(self.label_num, activation="softmax")(x)
+        outputs = tf.keras.layers.Dense(self.label_num, activation=self.final_activation)(x)
 
         model = tf.keras.Model(inputs=inputs, outputs=outputs)
 

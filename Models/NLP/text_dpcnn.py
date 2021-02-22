@@ -3,7 +3,7 @@ from tensorflow.keras.layers import *
 
 
 class TextDPCNN(object):
-    def __init__(self, vocab_size, max_len, num_class, embed_dims=128, num_filters=250, rnn_hidden=256, dropout=0.5):
+    def __init__(self, vocab_size, max_len, num_class, embed_dims=128, num_filters=250, rnn_hidden=256, dropout=0.5, final_activation="softmax"):
         # 词向量维度
         self.embed_dims = embed_dims
         # 词典大小
@@ -18,6 +18,8 @@ class TextDPCNN(object):
         self.max_len = max_len
         # 分类数量
         self.num_class = num_class
+        # 最后一层的激活函数
+        self.final_activation = final_activation
 
     def embedding(self, x):
         embedding_outputs = Embedding(self.vocab_size, self.embed_dims, input_length=self.max_len)(x)
@@ -57,7 +59,7 @@ class TextDPCNN(object):
             res_add_outputs = self._block(res_add_outputs)
         res_add_outputs = Flatten()(res_add_outputs)
 
-        outputs = Dense(self.num_class, activation="softmax")(res_add_outputs)
+        outputs = Dense(self.num_class, activation=self.final_activation)(res_add_outputs)
 
         model = Model(inputs=inputs, outputs=outputs)
 

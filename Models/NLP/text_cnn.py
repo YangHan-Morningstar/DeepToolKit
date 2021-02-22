@@ -3,7 +3,7 @@ from tensorflow.keras.layers import *
 
 
 class TextCNN(object):
-    def __init__(self, vocab_size, max_len, num_class, embed_dims=128, num_filters=256, dropout=0.5):
+    def __init__(self, vocab_size, max_len, num_class, embed_dims=128, num_filters=256, dropout=0.5, final_activation="softmax"):
         # 词向量维度
         self.embed_dims = embed_dims
         # 词典大小
@@ -18,6 +18,8 @@ class TextCNN(object):
         self.max_len = max_len
         # 分类数量
         self.num_class = num_class
+        # 最后一层的激活函数
+        self.final_activation = final_activation
 
         self.convs_block = [
             Conv1D(self.num_filters, filter_size, activation="relu") for filter_size in self.filter_sizes
@@ -41,7 +43,7 @@ class TextCNN(object):
 
         dropout_outputs = Dropout(rate=self.dropout)(conv_pool_cat_outputs)
 
-        outputs = Dense(self.num_class, activation="softmax")(dropout_outputs)
+        outputs = Dense(self.num_class, activation=self.final_activation)(dropout_outputs)
 
         model = Model(inputs=inputs, outputs=outputs)
 

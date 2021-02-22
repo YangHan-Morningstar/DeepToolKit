@@ -3,7 +3,7 @@ from tensorflow.keras.layers import *
 
 
 class TextRNN(object):
-    def __init__(self, vocab_size, max_len, num_class, embed_dims=128, rnn_hidden=256, dropout=0.5):
+    def __init__(self, vocab_size, max_len, num_class, embed_dims=128, rnn_hidden=256, dropout=0.5, final_activation="softmax"):
         # 词向量维度
         self.embed_dims = embed_dims
         # 词典大小
@@ -16,6 +16,8 @@ class TextRNN(object):
         self.max_len = max_len
         # 分类数量
         self.num_class = num_class
+        # 最后一层的激活函数
+        self.final_activation = final_activation
 
     def embedding(self, x):
         embedding_outputs = Embedding(self.vocab_size, self.embed_dims, input_length=self.max_len)(x)
@@ -32,7 +34,7 @@ class TextRNN(object):
         dropout_outputs = Dropout(rate=self.dropout)(bilstm_outputs)
         dropout_outputs = dropout_outputs[:, -1, :]
 
-        outputs = Dense(self.num_class, activation="softmax")(dropout_outputs)
+        outputs = Dense(self.num_class, activation=self.final_activation)(dropout_outputs)
 
         model = Model(inputs=inputs, outputs=outputs)
 
