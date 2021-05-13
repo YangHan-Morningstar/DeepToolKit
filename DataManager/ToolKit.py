@@ -90,7 +90,6 @@ class ToolKit(object):
         if not os.path.exists(target_filepath_val):
             os.makedirs(target_filepath_val)
 
-        data_category_list = os.listdir(source_data_filepath)
         for category in data_category_list:
             data_filepath_list = glob.glob(source_data_filepath + "/" + category + "/*")
             this_data_train_num = int(len(data_filepath_list) * (1 - rate))
